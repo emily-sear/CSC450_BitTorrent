@@ -5,59 +5,33 @@ import java.io.*;
 public class TrackerThread extends Thread
 {
     private Socket theClient;
-    private Scanner textInput;
-    private PrintStream textOutput;
-    
     public TrackerThread(Socket theClient)
     {
-        try
-        {
-            this.theClient = theClient;
-            this.textInput = new Scanner(this.theClient.getInputStream()); // reading in text 
-            this.textOutput = new PrintStream(this.theClient.getOutputStream());
-        }
-        catch(Exception e)
-        {
-
-        }
-
+        this.theClient = theClient;
     }
 
     public void run()
     {
-        try{
-            System.out.println("Tracker Thread Started...");
+        System.out.println("Tracker Thread Started....");
+        try
+        {
+            Scanner clientInput = new Scanner(this.theClient.getInputStream());
+            PrintStream clientOutput = new PrintStream(this.theClient.getOutputStream());
+            String newClientIP = clientInput.nextLine();
+            int newClientPortNumber = CORE.getNextClientPort();
+            clientOutput.println(newClientPortNumber);
+            String newClientIP_Port = newClientIP + ":" + newClientPortNumber;
+            CORE.changeConnectedClientIPs(newClientIP_Port, true);
+            String connectedClients = CORE.getConnectedClientIPsString();
+            clientOutput.println(connectedClients);
+            CORE.broadcastStringToClients(connectedClients);
+            CORE.addPrintStream(clientOutput);
 
-            // get the IP address of our connected client 
-            // add it to our list of peers
-            // then broadcast the current list of peers to this connected client 
-            // also, broadcast the current list of peers to all previous clients 
-            System.out.println("made it");
-    
-            String ipAddress = textInput.nextLine();
-
-            this.textOutput.println("We have recieved your IP Address.. adding it to the list...");
-    
-            
-            CORETORRENT.addIPAddressAndOutputStream(ipAddress, this.textOutput);
-            
-            System.out.println("We made it here");
-            
-            ArrayList<String> theListOfIPs = CORETORRENT.getTheList();
-    
-            System.out.println("We successfully got the list");
-    
-            this.textOutput.println(theListOfIPs.size());
-    
-            for(int i = 0; i < theListOfIPs.size(); i++)
-            {
-                this.textOutput.println(theListOfIPs.get(i));
-            }
-    
-            System.out.println("We are done.");
-    
-            this.textOutput.println("The list is now with the client"); 
-    
+            while(true){}
+            //get the IP address of our connect client
+            //add it to our list of peers, then broadcast
+            //the current list of peers to this connected client
+            //as well as all previous clients
         }
         catch(Exception e)
         {

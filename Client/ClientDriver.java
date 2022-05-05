@@ -14,25 +14,26 @@ public class ClientDriver
 
         PrintStream output = new PrintStream(s.getOutputStream());
         Scanner input = new Scanner(s.getInputStream());
+        Scanner userInput = new Scanner(System.in);
 
         // gets the localhost and the IP Address
         output.println(Inet4Address.getLocalHost().getHostAddress());
-         
+        String myPortNumber = input.nextLine();
+        String listOfConnectedClients = input.nextLine();
+        ClientCORE.updateTheConnectedClientIPS(listOfConnectedClients);
         
-        int length = Integer.parseInt(input.nextLine());
+        // maintain the connection with the tracker to get updates on connected clients
+        (new ClientTrackerListenerThread(input)).start();
+        
+        // create a server thread to establish connections with the Swarm 
+        (new ClientThreadServer(Integer.parseInt(myPortNumber))).start();
+        output.println(userInput.nextLine());
 
-        ArrayList<String> listOfIPAddresses = new ArrayList<String>();
-        for(int i = 0; i < length; i++)
+
+        while(true)
         {
-            listOfIPAddresses.add(input.nextLine());
+            System.out.println(input.nextLine());
         }
-
-
-        for(int j = 0; j < listOfIPAddresses.size(); j++)
-        {
-            System.out.println(listOfIPAddresses.get(j));
-        }
-        System.out.println(input.nextLine()); 
     }
 
 }

@@ -13,6 +13,7 @@ public class Tracker
             Socket s = listener.accept();
             TrackerThread t = new TrackerThread(s);
             t.start();
+            
         }
     }
 }
